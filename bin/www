@@ -11,8 +11,8 @@ http.createServer((req, res) => {
 
 const server = https.createServer(
   {
-    key: fs.readFileSync(path.join(__dirname, '../ssl/key.pem')),
-    cert: fs.readFileSync(path.join(__dirname, '../ssl/cert.pem')),
+    key: fs.readFileSync('/etc/letsencrypt/live/www.uchronie.ovh/privkey.pem'),
+    cert: fs.readFileSync('/etc/letsencrypt/live/www.uchronie.ovh/fullchain.pem'),
   },
   app
 );
