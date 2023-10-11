@@ -5,7 +5,6 @@ const router = express.Router()
 
 router.route("/")
     .get((req,res) =>{
-        console.log("here are your postit")
         PostIts.find({})
             .then(documents => res.json(documents))
             .catch(e => console.log(e))

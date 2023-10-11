@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
+const env = require('../environment/'+ process.env.NODE_ENV)
 
- mongoose.connect("mongodb+srv://admin:vz3409aTHKMEZcgO%3F%2FyPCT@uchronie.5j5gecp.mongodb.net/")
+ mongoose.connect(env.dbUrl)
  .then(() => console.log("connection db ok !"))
  .catch( e => console.log(e))

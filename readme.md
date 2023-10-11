@@ -6,4 +6,9 @@ kill -9 //PID
 
 where you replace //PID by the process ID.
 
+ssh ubuntu@149.202.54.101
 ytjDd4Xcc3g8
+
+every tree month : sudo chown ubuntu -R /etc/letsencrypt
+it's for permission access denied
+there's maybe better solutions

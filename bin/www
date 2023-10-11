@@ -2,7 +2,7 @@ const http = require('http');
 const https = require('https');
 const app = require('../app');
 const fs = require('fs');
-const path = require('path');
+const env = require('../environment/'+process.env.NODE_ENV) 
 
 http.createServer((req, res) => {
   res.writeHead('301', { Location: `https://${ req.headers.host }${ req.url }` })
@@ -11,8 +11,8 @@ http.createServer((req, res) => {
 
 const server = https.createServer(
   {
-    key: fs.readFileSync('/etc/letsencrypt/live/www.uchronie.ovh/privkey.pem'),
-    cert: fs.readFileSync('/etc/letsencrypt/live/www.uchronie.ovh/fullchain.pem'),
+    key: fs.readFileSync(env.key),
+    cert: fs.readFileSync(env.cert),
   },
   app
 );
