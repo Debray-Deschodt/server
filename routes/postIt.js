@@ -14,6 +14,7 @@ router.route("/")
                 .then(index => {
                     const newPostIt = new PostIts(req.body)
                     newPostIt.index = index
+                    newPostIt.ip = req.ip
                     const newPostItUp = new PostItsUp({top : newPostIt.top, left: newPostIt.left, index: newPostIt.index})
                     newPostIt.save().catch(e => console.log(e))
                     newPostItUp.save().catch(e => console.log(e))

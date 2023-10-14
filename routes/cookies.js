@@ -7,7 +7,7 @@ router.route('/')
         //     signed: true
         // })
         // res.clearCookie('register2')
-        console.log(req.signedCookies)
+        // console.log(req.signedCookies)
         res.end()
     })
 

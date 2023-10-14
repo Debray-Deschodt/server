@@ -1,7 +1,16 @@
 const passport = require("passport")
+const {findUserPerId} = require('../queries/user.queries')
+const {findSessionPerId} = require('../queries/session.queries')
 
-exports.sessionNew = (req, res, next)=>{
-    res.end()
+exports.sessionNew = async (req, res, next)=>{
+    try{
+        const session = await findSessionPerId(req.signedCookies.connect.sid)
+        // const user = await findUserPerId(req.signedCookies.connect.sid)
+        res.json(session)
+    }catch(e){
+        console.log('Attention, echec de la récuperation d\'un utilisateur, les cookies d\'un client sont peut-être corrompu ou la base de donnée disfonctionnelle.')
+        res.status(403).end()
+    }
 }
 
 exports.sessionCreate = (req, res, next)=>{
@@ -15,7 +24,6 @@ exports.sessionCreate = (req, res, next)=>{
                     if(err){
                         next(err)
                     }else{
-                        console.log(req.ip)
                         res.json(req.user.local.email)
                     }
                 })
@@ -29,6 +37,6 @@ exports.sessionDelete = (req, res, next)=>{
         if(err){
             return next(err)
         }
-        res.json('you\'ve been deconnected')
+        res.json('Vous avez été déconnecté')
     })
 }

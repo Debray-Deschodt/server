@@ -2,6 +2,6 @@ exports.ensureAuthenticated = (req, res, next) => {
     if(req.isAuthenticated()){
         next()
     }else{
-        res.status(403).json('Please authenticated yourself')
+        res.status(403).json('Veuillez vous authentifier')
     }
 }

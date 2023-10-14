@@ -2,7 +2,6 @@ const User = require('../database/models/user.model')
 
 exports.createUser = async (body) => {
     try {
-        console.log(body)
         const hashedPassword = await User.hashPassword(body.password)
             const user = new User({
                 local : {
@@ -14,6 +13,10 @@ exports.createUser = async (body) => {
     } catch(e){
         throw e;
     }
+}
+
+exports.findUserPerId = async (id) => {
+    return User.findOne({'_id': id})
 }
 
 exports.findUserPerEmail = async (email) => {

@@ -4,7 +4,7 @@ const {sessionNew, sessionCreate, sessionDelete} = require('../controller/auth.c
 const {ensureAuthenticated} = require('../config/security.config')
 
 router.route('/')
-    .get(sessionNew)
+    .get(ensureAuthenticated,sessionNew)
     .post(sessionCreate)
     .delete(ensureAuthenticated, sessionDelete)
 
