@@ -15,6 +15,7 @@ exports.sessionCreate = (req, res, next)=>{
                     if(err){
                         next(err)
                     }else{
+                        console.log(req.ip)
                         res.json(req.user.local.email)
                     }
                 })
