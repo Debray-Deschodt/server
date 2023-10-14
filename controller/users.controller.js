@@ -7,6 +7,6 @@ exports.userCreate = async (req, res, next)=>{
         res.end()
     } catch(e){
         console.log(e)
-        res.json(e)
+        res.json({error : 'Il y a déjà quelqu\'un qui s\'appelle comme toi'})
     }
 }

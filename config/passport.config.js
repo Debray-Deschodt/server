@@ -28,10 +28,10 @@ passport.use('local', new LocalStrategy({ usernameField: 'email'}, async  (email
             if(match){
                 done(null, user)
             }else{
-                done(null, false, {message: 'Password doesn\'t match'})
+                done(null, false, {message: 'nom d\'utilisateur ou mot de passe incorrect'})
             }
         }else{
-            done(null, false, {message: 'User not found'})
+            done(null, false, {message: 'nom d\'utilisateur incorrect'})
         }
     }catch(e){
         done(e)
