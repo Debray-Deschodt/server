@@ -1,14 +1,13 @@
 const passport = require("passport")
-const {findUserPerId} = require('../queries/user.queries')
-const {findSessionPerId} = require('../queries/session.queries')
+const mongoose = require('mongoose')
+const {findUserPerSessionId, findUserPerId} = require('../queries/user.queries')
 
 exports.sessionNew = async (req, res, next)=>{
     try{
-        const session = await findSessionPerId(req.signedCookies.connect.sid)
-        // const user = await findUserPerId(req.signedCookies.connect.sid)
-        res.json(session)
+        const user = await findUserPerSessionId(req.signedCookies['connect.sid'])
+        res.json(user.local.email)
     }catch(e){
-        console.log('Attention, echec de la récuperation d\'un utilisateur, les cookies d\'un client sont peut-être corrompu ou la base de donnée disfonctionnelle.')
+        console.log(e)
         res.status(403).end()
     }
 }
