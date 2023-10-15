@@ -5,6 +5,7 @@ const {findUserPerSessionId} = require('../queries/user.queries')
 exports.sessionNew = async (req, res, next)=>{
     try{
         const user = await findUserPerSessionId(req.signedCookies['connect.sid'])
+        console.log(req.ip)
         res.json(user.local.email)
         // console.log(user.local.email)
     }catch(e){

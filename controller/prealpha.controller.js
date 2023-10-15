@@ -10,30 +10,13 @@ exports.formCreate = async (req, res, next)=>{
             console.log('Il semble qu\'un client veut publier un second formulaire d\'inscription')
             res.json('Vous ne pouvez publier qu\'un seul document')
         }else{
-            newForm.save().catch(e => console.log(e))
+            FormRegister.save().catch(e => console.log(e))
             res.end()
         }
     }catch(e){
         console.log(e)
     }
 }
-
-
-// exports.formModify = async (req, res, next)=>{
-//     try{
-//         const form = await FormRegister.findOne({username : req.body.username})
-//         if(form){
-//             const newForm = new FormRegister(req.body)
-//             newForm.ip = req.ip
-//             newForm.save().catch(e => console.log(e))
-//             res.end()
-//         }else{
-//             res.json('vous devez dans un premier temps écrire un formulaire avant de le modifier.')
-//         }
-//     }catch(e){
-//         console.log(e)
-//     }
-// }
 
 exports.formModify = async (req, res, next)=>{
     const user = await findUserPerSessionId(req.signedCookies['connect.sid'])
