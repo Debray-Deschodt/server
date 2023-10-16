@@ -13,8 +13,7 @@ router.use('/users', users)
 router.use('/prealpha', prealpha)
 
 router.use("/", (req,res)=>{
-    console.log("welcome on the index")
-    res.end()
+    res.status(404).end()
 })
 
 
