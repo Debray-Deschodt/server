@@ -5,12 +5,15 @@ const cookies = require('./cookies')
 const users = require('./users')
 const auth = require('./auth')
 const prealpha = require('./prealpha')
+const admin = require('./admin')
+const nickname = require('./nickname')
 
 router.use("/postit", postIt)
 router.use('/cookies', cookies)
 router.use('/auth', auth)
 router.use('/users', users)
 router.use('/prealpha', prealpha)
+router.use('/nickname', nickname)
 
 router.use("/", (req,res)=>{
     res.status(404).end()

@@ -1,13 +1,13 @@
 const passport = require("passport")
 const mongoose = require('mongoose')
-const {findUserPerSessionId} = require('../queries/user.queries')
+const {findUserPerSessionId, findUserPerEmail} = require('../queries/user.queries')
 
 exports.sessionNew = async (req, res, next)=>{
     try{
         const user = await findUserPerSessionId(req.signedCookies['connect.sid'])
         console.log(req.ip)
-        res.json(user.local.email)
-        // console.log(user.local.email)
+        res.json({username : user.local.email, admin: user.local.admin})
+        console.log(user.local.email)
     }catch(e){
         console.log(e)
         res.status(403).end()
@@ -25,7 +25,10 @@ exports.sessionCreate = (req, res, next)=>{
                     if(err){
                         next(err)
                     }else{
-                        res.json(req.user.local.email)
+                        const user = findUserPerEmail(req.body.email).then((document)=>{
+                            // console.log(user)
+                            res.json({username : document.local.email, admin: document.local.admin})
+                        }).catch((e)=>console.log(e))
                     }
                 })
             }

@@ -7,7 +7,8 @@ exports.createUser = async (body) => {
             const user = new User({
                 local : {
                     email : body.email,
-                    password : hashedPassword
+                    password : hashedPassword,
+                    admin : false
                 }
             })
             return user.save() 
@@ -21,7 +22,7 @@ exports.findUserPerId = async (id) => {
 }
 
 exports.findUserPerEmail = async (email) => {
-    return User.findOne({'local.email': email})
+    return await User.findOne({'local.email': email})
 }
 
 exports.findUserPerSessionId = async (id) => {
