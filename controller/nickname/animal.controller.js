@@ -15,7 +15,6 @@ exports.animalCreate = async (req, res, next)=>{
 }
 
 exports.animalDelete = async (req, res, next)=>{
-    console.log(req.params)
-    await Animal.findOneAndDelete({name: req.params.name})
+    await Animal.findOneAndDelete({name: req.body.name})
     res.end()
 }

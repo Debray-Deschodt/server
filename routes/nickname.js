@@ -9,14 +9,10 @@ router.route('/')
 
 router.route('/animal')
     .post(animalCreate)
-
-router.route('/animal/:name')
-    .delete(animalDelete)
+    .put(animalDelete)
 
 router.route('/adjective')
     .post(adjectiveCreate)
-
-router.route('/adjective/:adjM')
-    .delete(adjectiveDelete)
+    .put(adjectiveDelete)
 
 module.exports = router

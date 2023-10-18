@@ -1,11 +1,11 @@
 const {createAdjective} = require('../../queries/nickname/adjective.queries.js')
-const Animal = require('../../database/models/nickname/adjective.model')
+const Adjectif = require('../../database/models/nickname/adjective.model')
 
 exports.adjectiveCreate = async (req, res, next)=>{
      try{
         const adjective = await createAdjective({
-            adjM:req.body.adjM.substring(0,1).toUpperCase() + req.body.adjM.substring(1,req.body.adjM.length).toLowerCase(), 
-            adjF:req.body.adjF.substring(0,1).toUpperCase() + req.body.adjF.substring(1,req.body.adjF.length).toLowerCase(), 
+            adjM:req.body.adjM.substring(0,1).toUpperCase() + req.body.adjM.substring(1,req.body.adjM.length).toLowerCase(),
+            adjF:req.body.adjF.substring(0,1).toUpperCase() + req.body.adjF.substring(1,req.body.adjF.length).toLowerCase(),
         })
         res.end()
     } catch(e){
@@ -15,6 +15,11 @@ exports.adjectiveCreate = async (req, res, next)=>{
 }
 
 exports.adjectiveDelete = async (req, res, next)=>{
-    await Animal.findOneAndDelete({adjM: req.params.adjM})
+    try{
+        await Adjectif.findOneAndDelete({adjM: req.body.adjM})
+    }catch(e){
+        console.log(e)
+    }
+        
     res.end()
 }
