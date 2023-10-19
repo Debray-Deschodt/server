@@ -1,7 +1,7 @@
 const passport = require("passport")
 const mongoose = require('mongoose')
 const FormRegister = require('../database/models/formRegisterPreAlpha')
-const {findUserPerSessionId} = require('../queries/user.queries')
+const {findUserPerSessionId, modifyUserMail} = require('../queries/user.queries')
 
 exports.formCreate = async (req, res, next)=>{
     try {
@@ -10,12 +10,15 @@ exports.formCreate = async (req, res, next)=>{
             console.log('Il semble qu\'un client veut publier un second formulaire d\'inscription')
             res.json('Vous ne pouvez publier qu\'un seul document')
         }else{
+            const re = /[a-zA-Z0-9-\.]+@[a-zA-Z-]+\.[a-zA-Z]{1,6}/
             const newForm = new FormRegister({
                 text: req.body.text,
                 username: req.body.username,
                 ip: req.ip
             })
+            re.exec(req.body.text)
             newForm.save().catch(e => console.log(e))
+            
             res.json('Le formulaire à bien été envoyé ')
         }
     }catch(e){
@@ -25,12 +28,14 @@ exports.formCreate = async (req, res, next)=>{
 
 exports.formModify = async (req, res, next)=>{
     const user = await findUserPerSessionId(req.signedCookies['connect.sid'])
-    FormRegister.findOneAndUpdate({username : req.body.username}, {$set: {text: req.body.text} }).then(()=>{
+    try{
+        await FormRegister.findOneAndUpdate({username : req.body.username}, {$set: {text: req.body.text} })
+        const re = /[a-zA-Z0-9-\.]+@[a-zA-Z-]+\.[a-zA-Z]{1,6}/
+        await modifyUserMail(req.body.username, re.exec(req.body.text)[0])
         res.json('Le formulaire à bien été modifié')
-    }).catch((e)=>{
+    }catch(e){
         console.log(e)
-        res.json('vous devez dans un premier temps écrire un formulaire avant de le modifier.')
-    })
+    }
 }
 
 exports.formGet = async (req, res, next)=>{

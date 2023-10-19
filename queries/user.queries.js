@@ -17,6 +17,15 @@ exports.createUser = async (body) => {
     }
 }
 
+exports.modifyUserMail = async (username, mail) => {
+    try{
+        console.log(mail)
+        const user = await User.findOneAndUpdate({'local.email' : username}, {$set: {'local.mail': mail}})
+    }catch(e){
+        console.log(e)
+    }
+}
+
 exports.findUserPerId = async (id) => {
     return User.findOne({'_id': id})
 }
