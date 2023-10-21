@@ -3,7 +3,6 @@ const router = express.Router()
 
 router.route('/')
     .post((req,res)=>{
-        res.clearCookie('volume')
         res.cookie('music', req.body.music)
         res.cookie('fx', req.body.fx)
         res.end()

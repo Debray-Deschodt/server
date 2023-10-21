@@ -9,7 +9,7 @@ const admin = require('./admin')
 const nickname = require('./nickname')
 
 router.use("/postit", postIt)
-router.use('/cookies', cookies)
+// router.use('/cookies', cookies)
 router.use('/auth', auth)
 router.use('/users', users)
 router.use('/prealpha', prealpha)
