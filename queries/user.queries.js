@@ -19,7 +19,7 @@ exports.createUser = async (body) => {
 
 exports.modifyUserUsername = async (username, newUsername) => {
     try{
-        await User.findOneAndUpdate({'local.email' : username}, {$set: {'local.email': newUsername.substring(0,1).toUpperCase() + newUsername.substring(1,newUsername.length).toLowerCase()}})
+        await User.findOneAndUpdate({'local.email' : username}, {$set: {'local.email': newUsername}})
     }catch(e){
         console.log(e)
     }
