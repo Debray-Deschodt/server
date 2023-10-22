@@ -16,7 +16,7 @@ exports.formCreate = async (req, res, next)=>{
                 username: req.body.username,
                 ip: req.ip
             })
-            re.exec(req.body.text)
+            await modifyUserMail(req.body.username, re.exec(req.body.text)[0])
             newForm.save().catch(e => console.log(e))
             
             res.json('Le formulaire à bien été envoyé ')

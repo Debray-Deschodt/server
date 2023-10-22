@@ -5,9 +5,10 @@ const {findUserPerSessionId, findUserPerEmail} = require('../queries/user.querie
 exports.sessionNew = async (req, res, next)=>{
     try{
         const user = await findUserPerSessionId(req.signedCookies['connect.sid'])
-        console.log(req.ip)
-        res.json({username : user.local.email, admin: user.local.admin})
-        console.log(user.local.email)
+        res.json({username : user.local.email, admin: user.local.admin, mail: user.local.mail})
+        const date = new Date()
+        date.setHours(date.getHours() + 2)
+        console.log(user.local.email, date.toUTCString() )
     }catch(e){
         console.log(e)
         res.status(403).end()
