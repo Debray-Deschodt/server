@@ -8,7 +8,6 @@ const prealpha = require('./prealpha')
 const admin = require('./admin')
 const nickname = require('./nickname')
 const bug = require('./bug')
-const game = require('./game')
 
 router.use("/postit", postIt)
 // router.use('/cookies', cookies)
@@ -17,7 +16,6 @@ router.use('/users', users)
 router.use('/prealpha', prealpha)
 router.use('/nickname', nickname)
 router.use('/bug', bug)
-router.use('/game', game)
 
 router.use("/", (req,res)=>{
     res.status(404).end()
