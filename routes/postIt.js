@@ -6,20 +6,7 @@ const router = express.Router()
 router.route("/")
     .get((req,res) =>{
         PostIts.find({})
-            .then(documents => {
-                let documentsAnonyme = []
-                for(let i=0; i<documents.length; i++){
-                    documentsAnonyme[i]={
-                        text: documents[i].text,
-                        color:documents[i].color,
-                        top:documents[i].top,
-                        left:documents[i].left,
-                        index:documents[i].index,
-                        flat:documents[i].flat,
-                    }
-                }
-               res.json(documentsAnonyme) 
-            })
+            .then(documents => res.json(documents))
             .catch(e => console.log(e))
     })
     .post((req,res) => {
