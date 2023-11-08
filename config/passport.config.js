@@ -31,7 +31,7 @@ passport.use('local', new LocalStrategy({ usernameField: 'email'}, async  (email
                 done(null, false, {message: 'nom d\'utilisateur ou mot de passe incorrect'})
             }
         }else{
-            done(null, false, {message: 'nom d\'utilisateur incorrect'})
+            done(null, false, {message: 'nom d\'utilisateur ou mot de passe incorrect'})
         }
     }catch(e){
         done(e)
