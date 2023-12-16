@@ -45,7 +45,9 @@ exports.onlyAdjoining = (move) => {
  */
 exports.onlyAdjoiningSupport = (move) => {
     if (move.for > 0) {
-        const supportTo = move.for * 100 - Math.floor(move.for) * 100
+        const supportTo = Math.round(
+            move.for * 100 - Math.floor(move.for) * 100
+        )
         if (
             places[move.from].linkedLand.includes(supportTo) ||
             places[move.from].linkedSea.includes(supportTo)
@@ -200,10 +202,13 @@ exports.onlyAttackCanMove = (move) => {
 exports.onlyTroopSupportInLand = (game, move) => {
     if (move.for > 0) {
         let troop = true
-        const supportTo = move.for * 100 - Math.floor(move.for) * 100
+        const supportTo = Math.round(
+            move.for * 100 - Math.floor(move.for) * 100
+        )
         for (const player of game.players) {
             if (player.fleet.includes(move.from)) troop = false
         }
+        console.log(supportTo)
         if (troop && !places[supportTo].land) {
             return false
         }
