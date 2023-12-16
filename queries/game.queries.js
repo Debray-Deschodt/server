@@ -89,14 +89,18 @@ exports.getGameById = async (gameId) => {
 /**
  * delete a game
  * @param {string} gameId
+ * @param {string} username
  * @returns the deleted game
  */
-exports.getGameByIdAndDelete = async (gameId) => {
+exports.getGameByIdAndDelete = async (gameId, username) => {
     try {
-        const game = await Game.findOneAndDelete({
-            _id: gameId,
-            password: password
-        })
+        const game = await Game.findOne({ _id: gameId })
+        if (game._players[0] == username) {
+            await Game.findOneAndDelete({
+                _id: gameId,
+                password: password
+            })
+        }
         if (!game) {
             return false
         }
@@ -106,7 +110,6 @@ exports.getGameByIdAndDelete = async (gameId) => {
     }
 }
 
-//TODO convey => (from = to)
 /**
  * set a new move as attack, support or convey from a position to an other
  * @param {string} gameId
@@ -118,8 +121,9 @@ exports.getGameByIdAndDelete = async (gameId) => {
  */
 exports.createMove = async (gameId, username, from, to, _for) => {
     try {
-        const game = await Game.findOne({ _id: gameId })
-        game.move.push({ by: username, from: from, to: to, for: _for })
+        let game = await Game.findOne({ _id: gameId })
+        const i_move = game.move.findIndex((move) => move.from == from)
+        game.move[i_move] = { by: username, from: from, to: to, for: _for }
         const newGame = await Game.findOneAndUpdate({ _id: gameId }, game)
         return newGame.move
     } catch (e) {
@@ -147,14 +151,21 @@ exports.getResultGame = async (gameId) => {
  * @param {string} username
  * @param {number} from
  * @param {number} to
- * @returns the new flee array
+ * @returns the game updated or false if the pound wasn't fleeing
  */
 exports.createFlee = async (gameId, username, from, to) => {
     try {
         const game = await Game.findOne({ _id: gameId })
-        game.flee.push({ by: username, from: from, to: to })
-        const newGame = await Game.findOneAndUpdate({ _id: gameId }, game)
-        return newGame.flee
+        const i_flee = game.flee.findIndex(
+            (move) => move.by == username && move.from == from
+        )
+        if (i_flee != -1) {
+            game.flee[i_flee] = { by: username, from: from, to: to, for: 0 }
+            const newGame = await Game.findOneAndUpdate({ _id: gameId }, game)
+            return newGame
+        } else {
+            return false
+        }
     } catch (e) {
         throw e
     }
@@ -212,20 +223,15 @@ exports.createTroops = async (gameId, username, where) => {
 exports.nextRoundGame = async (gameId) => {
     try {
         let game = await Game.findOne({ _id: gameId })
-        switch (game.state.value) {
-            case 'move':
-                game.state.value = 'result'
-                game.flee = []
-                game.result = []
-                break
-            case 'result':
-                game.state.value = 'move'
-                game.move = []
-                game.state.season = !game.state.season
-                if (game.state.season) {
-                    game.state.year++
-                }
-                break
+        if (game.state.value == 'move') {
+            game.state.value = 'result'
+            game.flee = []
+            game.canceled = []
+            game.erased = []
+        } else {
+            game.state.value = 'move'
+            if (!game.state.season) game.state.year++
+            game.state.season = !game.state.season
         }
         await Game.findOneAndUpdate({ _id: gameId }, game)
         return game.state
@@ -277,9 +283,19 @@ exports.setResultGame = async (gameId, result) => {
 exports.setActiveGame = async (gameId, username) => {
     try {
         let game = await Game.findOne({ _id: gameId })
-        game.state.active = !game.state.active
-        await Game.findOneAndUpdate({ _id: gameId }, game)
+        if (game._players.includes(username)) {
+            game.state.active = !game.state.active
+            await Game.findOneAndUpdate({ _id: gameId }, game)
+        }
         return game.state.active
+    } catch (e) {
+        throw e
+    }
+}
+
+exports.saveUpdatedGame = async (gameId, game) => {
+    try {
+        await Game.findOneAndUpdate({ _id: gameId }, game)
     } catch (e) {
         throw e
     }

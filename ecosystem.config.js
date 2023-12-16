@@ -1,30 +1,45 @@
 module.exports = {
-  apps : [{
-    name: "Uchronie",
-    script: "./bin/www",
-    mode: "cluster",
-    autorestart: true,
-    watch: true,
-    instances: "1" ,
-    env: {
-      NODE_ENV: "development",
-    },
-    env_production: {
-      NODE_ENV: "production",
-    }
-  }, 
-//   {
-//     name: "worker",
-//     script: "./bin/www"
-//   }
-]}
-
+    apps: [
+        {
+            name: 'Uchronie',
+            script: './bin/www',
+            mode: 'cluster',
+            autorestart: true,
+            watch: true,
+            instances: '1',
+            env: {
+                NODE_ENV: 'development'
+            },
+            env_production: {
+                NODE_ENV: 'production'
+            }
+        },
+        {
+            name: 'UchronieAgenda',
+            script: './bin/agenda.js',
+            mode: 'cluster',
+            autorestart: true,
+            watch: true,
+            instances: '1',
+            env: {
+                NODE_ENV: 'development'
+            },
+            env_production: {
+                NODE_ENV: 'production'
+            }
+        }
+        //   {
+        //     name: "worker",
+        //     script: "./bin/www"
+        //   }
+    ]
+}
 
 // module.exports = {
 //   apps : [{
 //     script: './bin/www',
 //     watch: '.'
-//   }, 
+//   },
 //   // {
 //   //   script: './service-worker/',
 //   //   watch: ['./service-worker']

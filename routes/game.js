@@ -10,7 +10,8 @@ const {
     gameGetResult,
     fleeCreate,
     fleeGet,
-    TroopsCreate,
+    troopsCreate,
+    troopsDelete,
     gameNextRound,
     gameSetActive
 } = require('../controller/game.controller')
@@ -24,15 +25,11 @@ const {
 router.route('/:gameId/nextRound').put(gameNextRound)
 
 router.route('/:gameId/msg/paperbin').get(msgGet)
-router
-    .route('/:gameId/msg/:username')
-    .get(msgGetMine)
-    .post(msgCreate)
-    .put(msgSetPrivacy)
+router.route('/:gameId/msg').get(msgGetMine).post(msgCreate).put(msgSetPrivacy)
 router.route('/:gameId/move').post(moveCreate)
 router.route('/:gameId/newspaper').get(gameGetResult)
 router.route('/:gameId/flee').post(fleeCreate).get(fleeGet)
-router.route('/:gameId/troop').post(TroopsCreate)
+router.route('/:gameId/troop/:where').post(troopsCreate).delete(troopsDelete)
 router.route('/:gameId/active').put(gameSetActive)
 router.route('/:gameId/join').put(gameJoin)
 router

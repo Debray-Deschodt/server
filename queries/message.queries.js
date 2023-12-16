@@ -58,13 +58,19 @@ exports.getMineMsg = async (gameId, username) => {
 
 /**
  * set a message public
+ * @param {string} gameId
  * @param {string} msgIndex
+ * @param {string} username
  * @returns message
  */
-exports.setPrivacyMsg = async (gameId, msgIndex) => {
+exports.setPrivacyMsg = async (gameId, msgIndex, username) => {
     try {
         const msg = await Msg.findOne({ from: gameId, index: msgIndex })
-        await Msg.findOneAndUpdate({ _id: msg._id }, { $set: { public: true } })
+        if (msg.to == username)
+            await Msg.findOneAndUpdate(
+                { _id: msg._id },
+                { $set: { public: true } }
+            )
         return msg
     } catch (e) {
         throw e

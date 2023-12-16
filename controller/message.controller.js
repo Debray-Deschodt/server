@@ -4,7 +4,8 @@ const {
     getMineMsg,
     setPrivacyMsg
 } = require('../queries/message.queries')
-
+const { findSessionPerId } = require('../queries/session.queries')
+const { findUserPerId } = require('../queries/user.queries')
 /**
  * Send a new message.
  * @params gameId: string
@@ -24,26 +25,25 @@ exports.msgCreate = async (req, res, next) => {
     }
 }
 
-//TODO protect it. Only own user
-//TODO username doesn't need to be in body
 /**
  * Get all the user's private messages.
- * @params gameId: string, username: string
+ * @params gameId: string
  * @res messages
  */
 exports.msgGetMine = async (req, res, next) => {
     try {
-        const messages = await getMineMsg(
-            req.params.gameId,
-            req.params.username
+        const session = await findSessionPerId(req.signedCookies['connect.sid'])
+        const user = await findUserPerId(
+            JSON.parse(session.session).passport.user
         )
+        const username = user.local.email
+        const messages = await getMineMsg(req.params.gameId, username)
         res.json(messages)
     } catch (e) {
         throw e
     }
 }
 
-//TODO protect it. Only user = msg.to
 /**
  * Set a message's privacy to public.
  * @params gameId: string
@@ -52,9 +52,15 @@ exports.msgGetMine = async (req, res, next) => {
  */
 exports.msgSetPrivacy = async (req, res, next) => {
     try {
+        const session = await findSessionPerId(req.signedCookies['connect.sid'])
+        const user = await findUserPerId(
+            JSON.parse(session.session).passport.user
+        )
+        const username = user.local.email
         const message = await setPrivacyMsg(
             req.params.gameId,
-            req.body.msgIndex
+            req.body.msgIndex,
+            username
         )
         res.status(200).end()
     } catch (e) {

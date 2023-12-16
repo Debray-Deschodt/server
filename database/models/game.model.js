@@ -44,7 +44,24 @@ const gameSchema = schema({
         {
             by: { type: String, required: true },
             from: { type: Number, required: true },
-            to: { type: Number, required: true }
+            to: { type: Number, required: true },
+            for: { type: Number, default: 0 }
+        }
+    ],
+    canceled: [
+        {
+            by: { type: String, required: true },
+            from: { type: Number, required: true },
+            to: { type: Number, required: true },
+            for: { type: Number, default: 0 }
+        }
+    ],
+    erased: [
+        {
+            by: { type: String, required: true },
+            from: { type: Number, required: true },
+            to: { type: Number, required: true },
+            for: { type: Number, default: 0 }
         }
     ]
 })
