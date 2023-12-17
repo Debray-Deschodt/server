@@ -178,6 +178,12 @@ exports.moveCreate = async (req, res, next) => {
                 req.body.to,
                 req.body.for
             )
+            console.log({
+                by: username,
+                from: req.body.from,
+                to: req.body.to,
+                for: req.body.for
+            })
             res.status(200).end()
         } else {
             if (!onlyOwnPawn(game, move)) res.status(301).end()

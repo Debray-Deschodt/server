@@ -19,7 +19,7 @@ function processErasedTroops(process) {
  * @param process
  */
 function processFleeingLoosers(process) {
-    for (const canceled of process.canceled) {
+    for (const canceled of process.canceledAttack) {
         for (const attack of process.attack) {
             if (attack.to == canceled.from) {
                 process.flee.push(canceled)
@@ -43,12 +43,12 @@ function processWinners(process) {
         attack = attack.filter((move) => move.to != battle[0].to)
         let defender = process.wait.filter((move) => move.from == battle[0].to)
         if (
-            process.canceled.find((move) => move == defender[0]) == undefined &&
+            process.canceledAttack.find((move) => move == defender[0]) ==
+                undefined &&
             defender.length != 0
         ) {
             battle.push(defender) //add the waiting pound in the battle that have not been canceled.
             battle = battle.flat()
-            console.log(battle)
             console.log('defender is : ' + defender[0].from)
         }
         console.log('pounds engaged : ' + battle.length)
@@ -76,7 +76,7 @@ function processWinners(process) {
                 if (looser.from == battle[0].to) {
                     process.flee.push(looser)
                 } else {
-                    process.canceled.push(looser)
+                    process.canceledAttack.push(looser)
                 }
             }
         } else {
@@ -85,8 +85,7 @@ function processWinners(process) {
             for (const looser of loosers) {
                 let i_move = process.move.findIndex((move) => move == looser)
                 if (looser.from != battleTo) {
-                    process.canceled.push(looser)
-                    console.log(looser.from, battleTo)
+                    process.canceledAttack.push(looser)
                     process.move[i_move].to = process.move[i_move].from
                 }
             }
@@ -158,7 +157,7 @@ function AbortConvoy(process) {
     }
     if (convoyAborted.length > 0) {
         process.canceled.push(convoyAborted)
-        process.canceled.flat()
+        process.canceled = process.canceled.flat()
     }
 
     for (const convoy of convoyAborted) {
@@ -183,7 +182,7 @@ function AbortSupport(process) {
     }
     if (supportAborted.length > 0) {
         process.canceled.push(supportAborted)
-        process.canceled.flat()
+        process.canceled = process.canceled.flat()
     }
     for (const support of supportAborted) {
         let i_move = process.move.findIndex((move) => move == support)
@@ -203,6 +202,7 @@ exports.gameSetResult = (game) => {
         move: JSON.parse(JSON.stringify(game.move)),
         flee: [],
         canceled: [],
+        canceledAttack: [],
         erased: [],
         get attack() {
             return this.move.filter(
@@ -306,6 +306,8 @@ exports.gameSetResult = (game) => {
         (move, i) => process.move.indexOf(move) === i
     )
     game.flee = process.flee
+    process.canceled.push(process.canceledAttack)
+    process.canceled = process.canceled.flat()
     game.canceled = process.canceled
     game.erased = process.erased
     return game

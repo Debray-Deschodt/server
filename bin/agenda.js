@@ -14,12 +14,10 @@ gameNextRound = async (gameId) => {
     try {
         let game = await getGameById(gameId)
         if (game.state.value == 'move') {
-            console.log('result')
             game.state.value = 'result'
             game.state.nextState = Date.now() + gameSettingsTime[0]
             game = await gameSetResult(game)
         } else {
-            console.log('move')
             game.state.value = 'move'
             game.state.season = !game.state.season
             game.state.nextState = Date.now() + gameSettingsTime[1]
@@ -37,22 +35,10 @@ async function getDeadLine() {
     let gameId = 0
     const games = await Game.find({})
     for (const game of games) {
-        console.log(
-            Math.floor(
-                (Date.parse(game.state.nextState) - Date.now()) / (1000 * 60)
-            ) +
-                ':' +
-                Math.floor(
-                    ((Date.parse(game.state.nextState) - Date.now()) %
-                        (1000 * 60)) /
-                        1000
-                )
-        )
         if (
             Date.parse(game.state.nextState) - Date.now() > 0 &&
             Date.parse(game.state.nextState) - Date.now() <= deadLine
         ) {
-            console.log("it's now !")
             deadLine = Date.parse(game.state.nextState) - Date.now()
             gameId = game._id
         } else if (Date.parse(game.state.nextState) - Date.now() <= 0) {
@@ -73,7 +59,6 @@ async function waitUntilDeadline() {
 mongoose
     .connect(env.dbUrl)
     .then(() => {
-        console.log('schedule connected to db !')
         waitUntilDeadline()
     })
     .catch((e) => console.log(e))
