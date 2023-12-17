@@ -234,3 +234,12 @@ exports.onlyConvoyForFleet = (game, move) => {
     }
     return true
 }
+
+/**
+ * Certify that the game state is in autumn result part.
+ * @param {Game} game
+ */
+exports.onlyInAutumnResult = (game) => {
+    if (game.state.season || game.state.value == 'move') return false
+    return true
+}

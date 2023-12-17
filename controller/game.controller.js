@@ -30,7 +30,8 @@ const {
     onlyLandForTroops,
     onlyAttackCanMove,
     onlyConvoyForFleet,
-    onlyTroopSupportInLand
+    onlyTroopSupportInLand,
+    onlyInAutumnResult
 } = require('./modifier/game.modifier.js')
 const {
     gameSetMove,
@@ -274,7 +275,8 @@ exports.troopsCreate = async (req, res, next) => {
         if (
             onlyNewTroopInCities(req.params.where) &&
             onlyLessPawnThanOwnedCities(game) &&
-            onlyOwnCities(game, username, req.params.where)
+            onlyOwnCities(game, username, req.params.where) &&
+            onlyInAutumnResult(game)
         ) {
             const player = await createTroops(
                 req.params.gameId,
@@ -287,6 +289,7 @@ exports.troopsCreate = async (req, res, next) => {
             if (!onlyLessPawnThanOwnedCities(game)) res.status(302).end()
             if (!onlyOwnCities(game, username, req.params.where))
                 res.status(303).end()
+            if (!onlyInAutumnResult(game)) res.status(304).end()
         }
     } catch (e) {
         throw e

@@ -103,7 +103,7 @@ function processAttackStrength(process) {
     for (const support of process.support) {
         const supportFrom = Math.floor(support.for)
         console.log('suppoert from : ' + supportFrom)
-        const supportTo = support.for * 100 - supportFrom * 100
+        const supportTo = Math.round(support.for * 100 - supportFrom * 100)
         console.log('support to : ' + supportTo)
         const leader = process.attack.find(
             (move) => move.from == supportFrom && move.to == supportTo
