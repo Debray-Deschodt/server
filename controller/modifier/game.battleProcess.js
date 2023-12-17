@@ -44,10 +44,11 @@ function processWinners(process) {
         let defender = process.wait.filter((move) => move.from == battle[0].to)
         if (
             process.canceled.find((move) => move == defender[0]) == undefined &&
-            defender
+            defender.length != 0
         ) {
             battle.push(defender) //add the waiting pound in the battle that have not been canceled.
-            battle.flat()
+            battle = battle.flat()
+            console.log(battle)
             console.log('defender is : ' + defender[0].from)
         }
         console.log('pounds engaged : ' + battle.length)
