@@ -267,7 +267,7 @@ exports.gameSetResult = (game) => {
     }
 
     //set cities
-    if (game.state.season == true) {
+    if (game.state.season == false) {
         for (const player of game.players) {
             const i_player = game.players.findIndex((x) => x == player)
             for (const troop of player.troops) {
