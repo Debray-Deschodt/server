@@ -15,12 +15,12 @@ gameNextRound = async (gameId) => {
         let game = await getGameById(gameId)
         if (game.state.value == 'move') {
             game.state.value = 'result'
-            game.state.nextState = Date.now() + gameSettingsTime[0]
+            game.state.nextState = Date.now() + gameSettingsTime[1]
             game = await gameSetResult(game)
         } else {
             game.state.value = 'move'
             game.state.season = !game.state.season
-            game.state.nextState = Date.now() + gameSettingsTime[1]
+            game.state.nextState = Date.now() + gameSettingsTime[0]
             if (game.state.season) game.state.year++
             game = await gameSetMove(game)
         }
