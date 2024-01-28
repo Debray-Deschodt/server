@@ -38,6 +38,24 @@ exports.getPublicMsg = async (gameId) => {
 }
 
 /**
+ * get all the private messages that haven't been pinned in the game
+ * @param {string} gameId
+ * @returns the private unpinned messages array
+ */
+exports.getPrivateUnpinnedMsg = async (gameId) => {
+    try {
+        const messages = await Msg.find({
+            from: gameId,
+            public: false,
+            pinned: false
+        })
+        return messages
+    } catch (e) {
+        throw e
+    }
+}
+
+/**
  * get all the user messages that are private
  * @param {string} gameId
  * @param {string} username
@@ -71,6 +89,34 @@ exports.setPrivacyMsg = async (gameId, msgIndex, username) => {
                 { _id: msg._id },
                 { $set: { public: true } }
             )
+        return msg
+    } catch (e) {
+        throw e
+    }
+}
+
+/**
+ * switch message's statut to pinned/unpinned.
+ * @param {string} gameId
+ * @param {string} msgIndex
+ * @param {string} username
+ * @returns message
+ */
+exports.setPinMsg = async (gameId, msgIndex, username) => {
+    try {
+        const msg = await Msg.findOne({ from: gameId, index: msgIndex })
+        if (msg.to == username)
+            if (msg.pinned) {
+                await Msg.findOneAndUpdate(
+                    { _id: msg._id },
+                    { $set: { pinned: false } }
+                )
+            } else {
+                await Msg.findOneAndUpdate(
+                    { _id: msg._id },
+                    { $set: { pinned: true } }
+                )
+            }
         return msg
     } catch (e) {
         throw e

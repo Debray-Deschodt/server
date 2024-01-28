@@ -14,7 +14,11 @@ const {
     saveUpdatedGame
 } = require('../queries/game.queries.js')
 const { findSessionPerId } = require('../queries/session.queries')
-const { findUserPerId } = require('../queries/user.queries')
+const {
+    findUserPerId,
+    postHistory,
+    getHistory
+} = require('../queries/user.queries')
 const {
     onlyOwnPawn,
     onlyAdjoining,
@@ -38,6 +42,7 @@ const {
     gameSetResult
 } = require('./modifier/game.battleProcess.js')
 const { places } = require('../data/mapweb.js')
+const { msgSetPrivacyAll } = require('../controller/message.controller.js')
 
 //TODO password can't be in clear
 /**
@@ -351,6 +356,7 @@ exports.gameNextRound = async (req, res, next) => {
             game = await gameSetMove(game)
         }
         await saveUpdatedGame(req.params.gameId, game)
+        await msgSetPrivacyAll(req.params.gameId)
         res.status(200).end()
     } catch (e) {
         throw e
@@ -371,6 +377,45 @@ exports.gameSetActive = async (req, res, next) => {
         const username = user.local.email
         await setActiveGame(req.params.gameId, username)
         res.status(200).end()
+    } catch (e) {
+        throw e
+    }
+}
+
+/**
+ * update the research history of a User in a game
+ * @params gameId: string
+ * @req research: string, count: number
+ * @res status(200)
+ */
+exports.historyPost = async (req, res, next) => {
+    try {
+        const session = await findSessionPerId(req.signedCookies['connect.sid'])
+        await postHistory(
+            req.params.gameId,
+            JSON.parse(session.session).passport.user,
+            req.body.research,
+            req.body.count
+        )
+        res.status(200).end()
+    } catch (e) {
+        throw e
+    }
+}
+
+/**
+ * return the user's reseach history in a game
+ * @params gameId: string
+ * @res status(200)
+ */
+exports.historyGet = async (req, res, next) => {
+    try {
+        const session = await findSessionPerId(req.signedCookies['connect.sid'])
+        const researchHistory = await getHistory(
+            req.params.gameId,
+            JSON.parse(session.session).passport.user
+        )
+        res.json(researchHistory)
     } catch (e) {
         throw e
     }

@@ -2,7 +2,9 @@ const {
     createMsg,
     getPublicMsg,
     getMineMsg,
-    setPrivacyMsg
+    setPrivacyMsg,
+    setPinMsg,
+    getPrivateUnpinnedMsg
 } = require('../queries/message.queries')
 const { findSessionPerId } = require('../queries/session.queries')
 const { findUserPerId } = require('../queries/user.queries')
@@ -58,6 +60,47 @@ exports.msgSetPrivacy = async (req, res, next) => {
         )
         const username = user.local.email
         const message = await setPrivacyMsg(
+            req.params.gameId,
+            req.body.msgIndex,
+            username
+        )
+        res.status(200).end()
+    } catch (e) {
+        throw e
+    }
+}
+
+/**
+ * Set a message's privacy to public for all unpinned messages.
+ * @params gameId: string
+ * @req msgIndex: number
+ * @res status(200)
+ */
+exports.msgSetPrivacyAll = async (gameId) => {
+    try {
+        const messages = await getPrivateUnpinnedMsg(gameId)
+        for (msg of messages) {
+            await setPrivacyMsg(gameId, msg.index, msg.to)
+        }
+    } catch (e) {
+        throw e
+    }
+}
+
+/**
+ * Switch message's statut to pinned/unpinned .
+ * @params gameId: string
+ * @req msgIndex: number
+ * @res status(200)
+ */
+exports.msgPin = async (req, res, next) => {
+    try {
+        const session = await findSessionPerId(req.signedCookies['connect.sid'])
+        const user = await findUserPerId(
+            JSON.parse(session.session).passport.user
+        )
+        const username = user.local.email
+        const message = await setPinMsg(
             req.params.gameId,
             req.body.msgIndex,
             username
