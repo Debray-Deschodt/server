@@ -1,20 +1,28 @@
-const http = require('http');
-const https = require('https');
-const app = require('../app');
-const fs = require('fs');
-const env = require('../environment/'+process.env.NODE_ENV) 
+const http = require('http')
+const https = require('https')
+const app = require('../app')
+const fs = require('fs')
+const env = require('../environment/' + process.env.NODE_ENV)
+const socketio = require('socket.io')
 
 http.createServer((req, res) => {
-  res.writeHead('301', { Location: `https://${ req.headers.host }${ req.url }` })
-  res.end();
-}).listen(80);
+    res.writeHead('301', { Location: `https://${req.headers.host}${req.url}` })
+    res.end()
+}).listen(80)
 
 const server = https.createServer(
-  {
-    key: fs.readFileSync(env.key),
-    cert: fs.readFileSync(env.cert),
-  },
-  app
-);
+    {
+        key: fs.readFileSync(env.key),
+        cert: fs.readFileSync(env.cert)
+    },
+    app
+)
 
-server.listen(443);
+server.listen(443)
+
+const ios = socketio(server)
+const msg = ios.of('/msg')
+
+msg.on('connect', (socket) => {
+    socket.on('msgTrigger', (data) => console.log(data.gameId, data.username))
+})
