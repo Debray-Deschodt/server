@@ -19,7 +19,8 @@ exports.msgCreate = async (req, res, next) => {
         const msg = await createMsg(
             req.params.gameId,
             req.body.receiver,
-            req.body.content
+            req.body.content,
+            req.body.signature
         )
         res.status(200).end()
     } catch (e) {

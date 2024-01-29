@@ -7,7 +7,7 @@ const Msg = require('../database/models/message.model')
  * @param {string} content
  * @returns the message
  */
-exports.createMsg = async (gameId, username, content) => {
+exports.createMsg = async (gameId, username, content, signature) => {
     try {
         const messages = await Msg.find({ from: gameId })
         const msg = new Msg({
@@ -15,7 +15,8 @@ exports.createMsg = async (gameId, username, content) => {
             to: username,
             public: false,
             content: content,
-            index: messages.length || 0
+            index: messages.length || 0,
+            signature: signature
         })
         return msg.save()
     } catch (e) {
