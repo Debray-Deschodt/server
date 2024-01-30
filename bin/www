@@ -24,5 +24,11 @@ const ios = socketio(server)
 const msg = ios.of('/msg')
 
 msg.on('connect', (socket) => {
-    socket.on('msgTrigger', (data) => console.log(data.gameId, data.username))
+    socket.on('join', (data) => {
+        socket.join(data.gameId + data.userNumber)
+    })
+
+    socket.on('msgTrigger', (data) => {
+        msg.to(data.gameId + data.userNumber).emit('msgTrigger')
+    })
 })
