@@ -99,3 +99,16 @@ exports.getHistory = async (gameId, userId) => {
         return user.local.researchHistory[i_researchHistory]
     }
 }
+
+/**
+ * add a new game on the user's profil.
+ * @param {string} userId
+ * @param {string} gameId
+ */
+exports.postUserGame = async (userId, gameId) => {
+    let user = await User.findOne({ _id: userId })
+    if (!user.local.games.includes(gameId)) {
+        user.local.games.push(gameId)
+        await User.findOneAndUpdate({ _id: userId }, user)
+    }
+}

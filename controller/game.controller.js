@@ -11,13 +11,16 @@ const {
     createTroops,
     nextRoundGame,
     setActiveGame,
-    saveUpdatedGame
+    saveUpdatedGame,
+    updateGameSettings,
+    UserReadyGame
 } = require('../queries/game.queries.js')
 const { findSessionPerId } = require('../queries/session.queries')
 const {
     findUserPerId,
     postHistory,
-    getHistory
+    getHistory,
+    postUserGame
 } = require('../queries/user.queries')
 const {
     onlyOwnPawn,
@@ -44,10 +47,8 @@ const {
 const { places } = require('../data/mapweb.js')
 const { msgSetPrivacyAll } = require('../controller/message.controller.js')
 
-//TODO password can't be in clear
 /**
  * create a new game and push the first player
- * @req title: string, description: string, password: string, username: string
  * @res game
  */
 exports.gameCreate = async (req, res, next) => {
@@ -57,12 +58,8 @@ exports.gameCreate = async (req, res, next) => {
             JSON.parse(session.session).passport.user
         )
         const username = user.local.email
-        const game = await createGame(
-            req.body.title,
-            req.body.description,
-            req.body.password,
-            username
-        )
+        const game = await createGame(username)
+        await postUserGame(user._id, game._id)
         res.json(game)
     } catch (e) {
         throw e
@@ -82,14 +79,12 @@ exports.gamesGet = async (req, res, next) => {
     }
 }
 
-//TODO the password can't be in clear
 /**
  * Add a new player and return the game.
  * If the player is already in the game, it's a getter for the game.
  * If the player isn't in the game and it's full, return false.
  * If the password is wrong return false.
  * @params  gameId: string
- * @req password: string
  * @res game | false
  */
 exports.gameJoin = async (req, res, next) => {
@@ -99,21 +94,29 @@ exports.gameJoin = async (req, res, next) => {
             JSON.parse(session.session).passport.user
         )
         const username = user.local.email
-        const game = await pushGamePlayers(
-            req.params.gameId,
-            req.body.password,
-            username
-        )
+        const game = await pushGamePlayers(req.params.gameId, username)
+        await postUserGame(user._id, req.params.gameId)
         res.json(game)
     } catch (e) {
         throw e
     }
 }
 
-//TODO need modifier
-exports.gameModifier = async (req, res, next) => {
+/**
+ * Update the settings.
+ * @req gameId: string
+ * @req settings: Settings
+ * @res status(200)
+ */
+exports.gameUpdate = async (req, res, next) => {
     try {
-        res.status(401).end()
+        const session = await findSessionPerId(req.signedCookies['connect.sid'])
+        const user = await findUserPerId(
+            JSON.parse(session.session).passport.user
+        )
+        const username = user.local.email
+        await updateGameSettings(req.body.gameId, req.body.settings, username)
+        res.status(200).end()
     } catch (e) {
         throw e
     }
@@ -416,6 +419,32 @@ exports.historyGet = async (req, res, next) => {
             JSON.parse(session.session).passport.user
         )
         res.json(researchHistory)
+    } catch (e) {
+        throw e
+    }
+}
+
+/**
+ * switch user's ready state in the game.
+ * @params gameId : string
+ * @req ready: boolean
+ */
+exports.gameUserReady = async (req, res, next) => {
+    try {
+        const session = await findSessionPerId(req.signedCookies['connect.sid'])
+        const user = await findUserPerId(
+            JSON.parse(session.session).passport.user
+        )
+        const username = user.local.email
+        const game = await UserReadyGame(
+            req.params.gameId,
+            username,
+            req.body.ready
+        )
+        if (game.players.filter((player) => player.ready).length == 2) {
+            await setActiveGame(req.params.gameId, username)
+        }
+        res.status(200).end()
     } catch (e) {
         throw e
     }

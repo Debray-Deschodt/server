@@ -22,6 +22,7 @@ server.listen(443)
 
 const ios = socketio(server)
 const msg = ios.of('/msg')
+const lobby = ios.of('/lobby')
 
 msg.on('connect', (socket) => {
     socket.on('join', (data) => {
@@ -30,5 +31,15 @@ msg.on('connect', (socket) => {
 
     socket.on('msgTrigger', (data) => {
         msg.to(data.gameId + data.userNumber).emit('msgTrigger')
+    })
+})
+
+lobby.on('connect', (socket) => {
+    socket.on('join', (data) => {
+        socket.join(data.gameId)
+    })
+
+    socket.on('settingsTrigger', (data) => {
+        lobby.to(data.gameId).emit('settingsTrigger')
     })
 })

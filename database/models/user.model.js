@@ -8,7 +8,7 @@ const userSchema = schema({
         password: { type: String, required: true },
         admin: { type: Boolean, required: true },
         mail: { type: String, required: false },
-        games: [{ type: Number, required: false }],
+        games: [{ type: String, required: false }],
         researchHistory: [
             {
                 game: { type: String, required: false },

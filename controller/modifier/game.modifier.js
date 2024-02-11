@@ -1,4 +1,5 @@
 const { places } = require('../../data/mapweb.js')
+const Game = require('../../database/models/game.model.js')
 
 /**
  * Certify that the player have a pawn at this place.

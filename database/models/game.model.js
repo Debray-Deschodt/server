@@ -16,9 +16,9 @@ const gameSchema = schema({
             msg: { type: Array, default: [] }
         }
     ],
-    setting: { roundDuration: { type: String, default: 'short' } }, //short , long
+    setting: { roundDuration: { type: Number, default: 15 * 60 } },
     state: {
-        value: { type: String, default: 'move' }, // move, flee, newtroops
+        value: { type: String, default: 'move' }, // move, result
         year: { type: String, default: 0 },
         season: { type: Boolean, default: true }, //true -> spring, false -> autumn
         active: { type: Boolean, default: false },
@@ -29,7 +29,7 @@ const gameSchema = schema({
             by: { type: String, required: true },
             from: { type: Number, required: true },
             to: { type: Number, required: true },
-            for: { type: Number, default: 0 } // 0 attack, 44 support, -44.45 convey
+            for: { type: Number, default: 0 } // 0 attack, 44.45 support, -44.45 convey
         }
     ],
     result: [

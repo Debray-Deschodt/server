@@ -2,18 +2,16 @@ const Game = require('../database/models/game.model')
 
 /**
  * create a new game and add the first player
- * @param {string} title
- * @param {string} description
- * @param {string} password
  * @param {string} username
  * @returns the new game
  */
-exports.createGame = (title, description, password, username) => {
+exports.createGame = async (username) => {
     try {
-        const game = new Game({
-            title: title,
-            description: description,
-            password: password,
+        const passwordTemp = Math.floor(9999 * Math.random())
+        let game = new Game({
+            title: '',
+            description: '',
+            password: passwordTemp,
             _players: [username],
             players: [
                 {
@@ -22,11 +20,13 @@ exports.createGame = (title, description, password, username) => {
                     troops: [],
                     fleet: [],
                     cities: [],
-                    message: []
+                    msg: []
                 }
             ]
         })
-        return game.save()
+        game.password = game._id + ''
+        game = await game.save()
+        return game
     } catch (e) {
         throw e
     }
@@ -47,26 +47,26 @@ exports.getGames = async () => {
  * @param {string} username
  * @returns the game with the new player array or FALSE if the game is already full and the player new or in case of wrong password.
  */
-exports.pushGamePlayers = async (gameId, password, username) => {
+exports.pushGamePlayers = async (gameId, username) => {
     try {
-        let game = await Game.findOne({ _id: gameId, password: password })
-        if (game._players.length >= 7 || !game) {
-            return false
-        } else {
-            if (!game._players.includes(username)) {
-                game._players.push(username)
-                game.players.push({
-                    username: username,
-                    ready: false,
-                    troops: [],
-                    fleet: [],
-                    cities: [],
-                    message: []
-                })
-                await Game.findOneAndUpdate({ _id: gameId }, game)
-            }
-            return game
+        let game = await Game.findOne({ _id: gameId })
+        if (
+            game._players.length < 7 &&
+            game &&
+            !game._players.includes(username)
+        ) {
+            game._players.push(username)
+            game.players.push({
+                username: username,
+                ready: false,
+                troops: [],
+                fleet: [],
+                cities: [],
+                message: []
+            })
+            await Game.findOneAndUpdate({ _id: gameId }, game)
         }
+        return game
     } catch (e) {
         throw e
     }
@@ -293,9 +293,66 @@ exports.setActiveGame = async (gameId, username) => {
     }
 }
 
+/**
+ * Update a game to game value.
+ * @param {string} gameId
+ * @param {Game} game
+ */
 exports.saveUpdatedGame = async (gameId, game) => {
     try {
         await Game.findOneAndUpdate({ _id: gameId }, game)
+    } catch (e) {
+        throw e
+    }
+}
+
+/**
+ * Update the settings.
+ * @param {Game} gameId
+ * @param {title, description, password, settings} settings
+ * @param {string} username
+ * @returns
+ */
+exports.updateGameSettings = async (gameId, settings, username) => {
+    try {
+        const game = await Game.findOne({ _id: gameId })
+        if (username == game._players[0]) {
+            let newGame = JSON.parse(JSON.stringify(game))
+            newGame.title = settings.title
+            newGame.description = settings.description
+            newGame.password = settings.password
+            newGame.setting.roundDuration = settings.roundDuration
+            await Game.findOneAndUpdate({ _id: gameId }, newGame)
+            return true
+        } else {
+            return false
+        }
+    } catch (e) {
+        throw e
+    }
+}
+
+/**
+ * switch user's ready state in the game.
+ * @param {string} gameId
+ * @param {string} username
+ * @param {boolean} ready
+ * @returns
+ */
+exports.UserReadyGame = async (gameId, username, ready) => {
+    try {
+        const game = await Game.findOne({ _id: gameId })
+        const i_players = game._players.findIndex(
+            (_username) => _username == username
+        )
+        let players = game.players
+        players[i_players].ready = ready
+        const newGame = await Game.findOneAndUpdate(
+            { _id: gameId },
+            { $set: { players: players } },
+            { new: true }
+        )
+        return newGame
     } catch (e) {
         throw e
     }

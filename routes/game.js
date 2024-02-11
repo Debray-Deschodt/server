@@ -4,7 +4,7 @@ const {
     gamesGet,
     gameCreate,
     gameJoin,
-    gameModifier,
+    gameUpdate,
     gameDelete,
     moveCreate,
     gameGetResult,
@@ -15,7 +15,8 @@ const {
     gameNextRound,
     gameSetActive,
     historyGet,
-    historyPost
+    historyPost,
+    gameUserReady
 } = require('../controller/game.controller')
 const {
     msgGet,
@@ -34,12 +35,12 @@ router.route('/:gameId/newspaper').get(gameGetResult)
 router.route('/:gameId/flee').post(fleeCreate).get(fleeGet)
 router.route('/:gameId/troop/:where').post(troopsCreate).delete(troopsDelete)
 router.route('/:gameId/active').put(gameSetActive)
-router.route('/:gameId/join').put(gameJoin)
+router.route('/:gameId/join').put(gameJoin).post(gameUserReady)
 router
     .route('/')
     .get(gamesGet)
     .post(gameCreate)
-    .put(gameModifier)
+    .put(gameUpdate)
     .delete(gameDelete)
 
 module.exports = router
