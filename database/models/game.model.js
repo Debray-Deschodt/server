@@ -4,7 +4,7 @@ const schema = mongoose.Schema
 const gameSchema = schema({
     title: { type: String, default: 'Nouvelle Partie' },
     description: { type: String, default: 'Pas de description' },
-    password: { type: String, default: '' },
+    password: { type: String, default: '', unique: true },
     _players: [{ type: String, required: true }],
     players: [
         {
@@ -16,7 +16,11 @@ const gameSchema = schema({
             msg: { type: Array, default: [] }
         }
     ],
-    setting: { roundDuration: { type: Number, default: 15 * 60 } },
+    setting: {
+        roundDuration: { type: Number, default: 15 * 60 },
+        interRoundDuration: { type: Number, default: 5 * 60 },
+        nbrPlayer: { type: Number, default: 7 }
+    },
     state: {
         value: { type: String, default: 'move' }, // move, result
         year: { type: String, default: 0 },

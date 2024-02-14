@@ -51,7 +51,7 @@ exports.pushGamePlayers = async (gameId, username) => {
     try {
         let game = await Game.findOne({ _id: gameId })
         if (
-            game._players.length < 7 &&
+            game._players.length < game.setting.nbrPlayer &&
             game &&
             !game._players.includes(username)
         ) {
@@ -316,12 +316,18 @@ exports.saveUpdatedGame = async (gameId, game) => {
 exports.updateGameSettings = async (gameId, settings, username) => {
     try {
         const game = await Game.findOne({ _id: gameId })
-        if (username == game._players[0]) {
+        const gameBypassword = await Game.find({ password: settings.password })
+        if (
+            username == game._players[0] &&
+            gameBypassword.filter((_game) => _game._id != gameId).length == 0
+        ) {
             let newGame = JSON.parse(JSON.stringify(game))
             newGame.title = settings.title
             newGame.description = settings.description
             newGame.password = settings.password
             newGame.setting.roundDuration = settings.roundDuration
+            newGame.setting.interRoundDuration = settings.interRoundDuration
+            newGame.setting.nbrPlayer = settings.nbrPlayer
             await Game.findOneAndUpdate({ _id: gameId }, newGame)
             return true
         } else {
@@ -347,6 +353,34 @@ exports.UserReadyGame = async (gameId, username, ready) => {
         )
         let players = game.players
         players[i_players].ready = ready
+        const newGame = await Game.findOneAndUpdate(
+            { _id: gameId },
+            { $set: { players: players } },
+            { new: true }
+        )
+        return newGame
+    } catch (e) {
+        throw e
+    }
+}
+
+/**
+ * add multiple cities to a player in a game.
+ * @param {string} gameId
+ * @param {string} username
+ * @param {number[]} ready
+ * @returns the new game.
+ */
+exports.addMultipleCities = async (gameId, username, startPosition) => {
+    try {
+        const game = await Game.findOne({ _id: gameId })
+        const i_players = game._players.findIndex(
+            (_username) => _username == username
+        )
+        let players = game.players
+        for (const pos of startPosition) {
+            players[i_players].cities.push(pos)
+        }
         const newGame = await Game.findOneAndUpdate(
             { _id: gameId },
             { $set: { players: players } },

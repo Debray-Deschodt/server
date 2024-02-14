@@ -40,6 +40,9 @@ lobby.on('connect', (socket) => {
     })
 
     socket.on('settingsTrigger', (data) => {
-        lobby.to(data.gameId).emit('settingsTrigger')
+        socket.to(data.gameId).emit('settingsTrigger', data)
+    })
+    socket.on('readyTrigger', (data) => {
+        lobby.to(data.gameId).emit('readyTrigger')
     })
 })

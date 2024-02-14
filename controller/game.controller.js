@@ -13,7 +13,8 @@ const {
     setActiveGame,
     saveUpdatedGame,
     updateGameSettings,
-    UserReadyGame
+    UserReadyGame,
+    addMultipleCities
 } = require('../queries/game.queries.js')
 const { findSessionPerId } = require('../queries/session.queries')
 const {
@@ -46,6 +47,7 @@ const {
 } = require('./modifier/game.battleProcess.js')
 const { places } = require('../data/mapweb.js')
 const { msgSetPrivacyAll } = require('../controller/message.controller.js')
+const { startPositions } = require('../data/gameStartPositions.js')
 
 /**
  * create a new game and push the first player
@@ -115,8 +117,12 @@ exports.gameUpdate = async (req, res, next) => {
             JSON.parse(session.session).passport.user
         )
         const username = user.local.email
-        await updateGameSettings(req.body.gameId, req.body.settings, username)
-        res.status(200).end()
+        const passwordUnique = await updateGameSettings(
+            req.body.gameId,
+            req.body.settings,
+            username
+        )
+        res.json(passwordUnique)
     } catch (e) {
         throw e
     }
@@ -346,15 +352,15 @@ exports.gameNextRound = async (req, res, next) => {
     try {
         let game = await getGameById(req.params.gameId)
         if (game.state.value == 'move') {
-            console.log('result')
             game.state.value = 'result'
-            game.state.nextState = Date.now() + 1000 * 60 * 5
+            game.state.nextState =
+                Date.now() + game.setting.interRoundDuration * 1000
             game = await gameSetResult(game)
         } else {
-            console.log('move')
             game.state.value = 'move'
             game.state.season = !game.state.season
-            game.state.nextState = Date.now() + 1000 * 60 * 15
+            game.state.nextState =
+                Date.now() + game.setting.roundDuration * 1000
             if (game.state.season) game.state.year++
             game = await gameSetMove(game)
         }
@@ -441,8 +447,27 @@ exports.gameUserReady = async (req, res, next) => {
             username,
             req.body.ready
         )
-        if (game.players.filter((player) => player.ready).length == 2) {
+
+        if (
+            game.players.filter((player) => player.ready).length ==
+            game.setting.nbrPlayer
+        ) {
             await setActiveGame(req.params.gameId, username)
+            //start game
+            let startPosition = startPositions[game.players.length - 2]
+            for (const i_player in game.players) {
+                const randPos = Math.floor(
+                    (game.players.length - i_player) * Math.random()
+                )
+                await addMultipleCities(
+                    req.params.gameId,
+                    game.players[i_player].username,
+                    startPosition[randPos]
+                )
+                startPosition = startPosition.filter(
+                    (posSet) => posSet != startPosition[randPos]
+                )
+            }
         }
         res.status(200).end()
     } catch (e) {
