@@ -13,25 +13,25 @@ module.exports = {
             env_production: {
                 NODE_ENV: 'production'
             }
-        },
-        {
-            name: 'UchronieAgenda',
-            script: './bin/agenda.js',
-            mode: 'cluster',
-            autorestart: true,
-            watch: true,
-            instances: '1',
-            env: {
-                NODE_ENV: 'development'
-            },
-            env_production: {
-                NODE_ENV: 'production'
-            }
         }
+        // {
+        //     name: 'UchronieAgenda',
+        //     script: './bin/agenda.js',
+        //     mode: 'cluster',
+        //     autorestart: true,
+        //     watch: true,
+        //     instances: '1',
+        //     env: {
+        //         NODE_ENV: 'development'
+        //     }
+        //     env_production: {
+        //         NODE_ENV: 'production'
+        //     }
+        // }
         //   {
         //     name: "worker",
         //     script: "./bin/www"
-        //   }
+        // }
     ]
 }
 

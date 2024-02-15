@@ -19,6 +19,7 @@ const server = https.createServer(
 )
 
 server.listen(443)
+exports.server = server
 
 const ios = socketio(server)
 const msg = ios.of('/msg')
