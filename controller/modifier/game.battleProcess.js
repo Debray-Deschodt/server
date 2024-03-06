@@ -305,6 +305,12 @@ exports.gameSetResult = (game) => {
     game.result = process.move.filter(
         (move, i) => process.move.indexOf(move) === i
     )
+
+    for (user in game.players) {
+        game.players[user].newTroops = []
+        game.players[user].newFleet = []
+    }
+
     game.flee = process.flee
     process.canceled.push(process.canceledAttack)
     process.canceled = process.canceled.flat()
@@ -331,12 +337,24 @@ exports.gameSetMove = (game) => {
                 (pos) => pos == flee.from
             )
             if (i_troop != -1) {
-                game.players[i_player].troops[i_troop] = flee.to
+                if (flee.from == flee.to) {
+                    game.players[i_player].troop = game.players[
+                        i_player
+                    ].troop.filter((troop) => troop != flee.from)
+                } else {
+                    game.players[i_player].troops[i_troop] = flee.to
+                }
             } else {
                 const i_fleet = game.players[i_player].fleet.findIndex(
                     (pos) => pos == flee.from
                 )
-                game.players[i_player].fleet[i_troop] = flee.to
+                if (flee.from == flee.to) {
+                    game.players[i_player].fleet = game.players[
+                        i_player
+                    ].fleet.filter((fleet) => fleet != flee.from)
+                } else {
+                    game.players[i_player].fleet[i_troop] = flee.to
+                }
             }
         }
     }

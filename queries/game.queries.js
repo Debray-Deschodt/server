@@ -92,7 +92,7 @@ exports.getGameById = async (gameId) => {
  * @param {string} username
  * @returns the deleted game
  */
-exports.getGameByIdAndDelete = async (gameId, username) => {
+exports.getGameByIdAndDelete = async (gameId, password, username) => {
     try {
         const game = await Game.findOne({ _id: gameId })
         if (game._players[0] == username) {
@@ -201,9 +201,11 @@ exports.createTroops = async (gameId, username, where) => {
         for (let i = 0; i < game._players.length; i++) {
             if (game.players[i].username == username) {
                 if (where > 0) {
-                    game.players[i].troops.push(where)
+                    game.players[i].troops.push(Math.abs(where))
+                    game.players[i].newTroops.push(Math.abs(where))
                 } else {
-                    game.players[i].fleet.push(-where)
+                    game.players[i].fleet.push(Math.abs(where))
+                    game.players[i].newFleet.push(Math.abs(where))
                 }
                 await Game.findOneAndUpdate({ _id: gameId }, game)
                 return game.players[i]

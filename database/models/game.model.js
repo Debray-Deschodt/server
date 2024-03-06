@@ -13,7 +13,9 @@ const gameSchema = schema({
             troops: { type: Array, default: [] },
             fleet: { type: Array, default: [] },
             cities: { type: Array, default: [] },
-            msg: { type: Array, default: [] }
+            msg: { type: Array, default: [] },
+            newTroops: { type: Array, default: [] },
+            newFleet: { type: Array, default: [] }
         }
     ],
     setting: {

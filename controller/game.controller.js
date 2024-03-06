@@ -3,6 +3,7 @@ const {
     getGames,
     pushGamePlayers,
     getGameByIdAndDelete,
+    getMsgByGameIdAndDelete,
     getGameById,
     createMove,
     getResultGame,
@@ -128,7 +129,6 @@ exports.gameUpdate = async (req, res, next) => {
     }
 }
 
-//TODO delete the msg associated to the game
 /**
  * Delete a game if the password is correct.
  * Return the game deleted or false if the pssword is wrong
@@ -148,13 +148,17 @@ exports.gameDelete = async (req, res, next) => {
             req.body.password,
             username
         )
+        await getMsgByGameIdAndDelete(
+            req.params.gameId,
+            req.body.password,
+            username
+        )
         res.json(game)
     } catch (e) {
         throw e
     }
 }
 
-//TODO should be optimized with a nez constant in the controller. const troop = true/false. indeed this is processed several times in the modifiers.
 /**
  * Set a new move as attack, support or convey from a position to an other
  * @params gameId: string
@@ -214,7 +218,7 @@ exports.moveCreate = async (req, res, next) => {
     }
 }
 
-//TODO the round have to be finished first or the others could see your moves
+//SECURITY the round have to be finished first or the others could see your moves
 /**
  * Get the newspaper
  * @params gameId: string
@@ -294,9 +298,10 @@ exports.troopsCreate = async (req, res, next) => {
         const game = await getGameById(req.params.gameId)
         if (
             onlyNewTroopInCities(req.params.where) &&
-            onlyLessPawnThanOwnedCities(game) &&
+            onlyLessPawnThanOwnedCities(game, username) &&
             onlyOwnCities(game, username, req.params.where) &&
-            onlyInAutumnResult(game)
+            onlyInAutumnResult(game) &&
+            onlyFreeCities(game, username, req.params.where)
         ) {
             const player = await createTroops(
                 req.params.gameId,
@@ -306,10 +311,13 @@ exports.troopsCreate = async (req, res, next) => {
             res.json(player)
         } else {
             if (!onlyNewTroopInCities(req.params.where)) res.status(301).end()
-            if (!onlyLessPawnThanOwnedCities(game)) res.status(302).end()
+            if (!onlyLessPawnThanOwnedCities(game, username))
+                res.status(302).end()
             if (!onlyOwnCities(game, username, req.params.where))
                 res.status(303).end()
             if (!onlyInAutumnResult(game)) res.status(304).end()
+            if (!onlyFreeCities(game, username, req.params.where))
+                res.status(305).end()
         }
     } catch (e) {
         throw e

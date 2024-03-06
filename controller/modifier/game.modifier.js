@@ -131,7 +131,7 @@ exports.onlyFreePlaces = (game, move) => {
     return true
 }
 
-//TODO only if the game.status.value = 'move'
+//SECURITY only if the game.status.value = 'move'
 /**
  * Certify that the Game is in 'move' mode.
  * @notice made for fleeGet
@@ -166,7 +166,6 @@ exports.onlyOwnCities = (game, username, where) => {
     return false
 }
 
-//TODO onlyFreeCities
 /**
  * Certify that there is no pawn on the city.
  * @notice Made for troopsCreate
@@ -174,16 +173,31 @@ exports.onlyOwnCities = (game, username, where) => {
  * @param {string} username
  * @param {number} where
  */
-exports.onlyFreeCities = (game, username, where) => {}
+exports.onlyFreeCities = (game, username, where) => {
+    const user = game.players.find((_user) => _user.username == username)
+    if (
+        user.troops.includes(Math.abs(where)) ||
+        user.fleet.includes(Math.abs(where))
+    ) {
+        return false
+    } else {
+        return true
+    }
+}
 
-//TODO cities.length = paws.length.
 /**
  * Certify that the user doesn't have more pawn than onwed cities.
  * @notice Made for troopsCreate
  * @param {Game} game
+ * @param {string} username
  */
-exports.onlyLessPawnThanOwnedCities = (game) => {
-    return true
+exports.onlyLessPawnThanOwnedCities = (game, username) => {
+    const user = game.players.find((_user) => _user.username == username)
+    if (user.cities.length > user.troops.length + user.fleet.length) {
+        return true
+    } else {
+        return false
+    }
 }
 
 /**

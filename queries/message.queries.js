@@ -1,4 +1,5 @@
 const Msg = require('../database/models/message.model')
+const Game = require('../database/models/game.model')
 
 /**
  * Send a new message
@@ -119,6 +120,28 @@ exports.setPinMsg = async (gameId, msgIndex, username) => {
                 )
             }
         return msg
+    } catch (e) {
+        throw e
+    }
+}
+
+/**
+ * delete the messages associated to a game.
+ * @param {string} gameId
+ * @param {string} password
+ * @param {string} username
+ * @returns the deleted game
+ */
+exports.getMsgByGameIdAndDelete = async (gameId, password, username) => {
+    try {
+        const game = await Game.findOne({ _id: gameId, password: password })
+        if (game._players[0] == username) {
+            console.log('dev : delete Many messages')
+            // Msg.DeleteMany({ from: gameId })
+        } else {
+            return false
+        }
+        return game
     } catch (e) {
         throw e
     }
